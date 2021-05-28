@@ -121,3 +121,8 @@
     cancelled out of its computation when outside the expected frequency range. This ensures that the shared
     array will be fully populated
   - Will now declare this to be version 1.0 of the ANCOS program as its primary functionality is now finished. 
+  
+  28/05/2021 V_0.1
+  
+  - Minor changes made to the treatment of the wave domain decomposition truncation limit.
+  - Other minor bug fixes.
