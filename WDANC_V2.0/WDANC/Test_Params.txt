@@ -1,0 +1,11 @@
+'''This document stores the parameters for the microphone array, loudspeaker array, and external plane wavefield for the WDANC program'''
+
+Q = {12}                
+R_mic = {1.0}           \\\Radius of the microphone array
+L = {36}                
+R_speaker = {1.5}       \\\Radius of the loudspeaker array
+wavevector = {1,0}      \\\Normalised direction vector for the  plane wave
+file_name = {Test.wav}  \\\name of the file whose FFT will be used as the spectrum
+f_max = {1024}          \\\Maximum frequency for ANC to be run over (Hz)
+
+

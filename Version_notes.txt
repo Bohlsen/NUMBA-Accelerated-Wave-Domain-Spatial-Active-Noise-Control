@@ -1,0 +1,123 @@
+22/02/2021 V0.0
+
+- Finished GPU implementation of Radix-2
+
+24/02/2021 V0.1
+
+- Implemented CPU Bessel Functions recursively
+
+24/02/2021 V0.1.1
+
+- Removed deprecated power series implementation of bessel Functions
+
+25/02/2021 V0.1.1
+
+- Updated recursive bessel function implementation to an interative implementation
+- Implementation of Bessel functions on CUDA completed
+- Implemented Bessel controller and implemented bessel calculation benchmark
+
+02/03/2021 V0.2.0
+
+- Begun constructing programs for wave field synthesis
+- Implemented the scalar form of the cylindrical harmonics expansion
+- Attempted to improve Bessel function calculation to better handle small values, gave up after multiple failed attempts
+
+03/03/2021 V0.2.0
+
+- Vectorised the cylindrical harmonics expansion under the assumption that we will always be computing
+  the sound field over the same spatial region, which was taken to be a radius 1 circle
+- Updated Bessel_G to improve performance of the recursive section of the bessel function calculation
+
+04/03/2021 V0.2.1
+
+- Changed Bessel_G to compute all of the Bessel functions which will be required for a particular WaveField step as a matrix
+- Updated Bessel_Test to use the new version of Bessel_G
+- Implementing the WaveField on CUDA by factorising the required sum into a matrix product between the J matrix and a new Gamma matrix I defined as the coefficients
+- Implemented a generalised version of Matrix Multiplication
+
+05/03/2021 V0.2.2
+
+- Updated to NUMBA V0.52 and will attempt to implement the complex power support which is included in this new version of NUMBA
+- Attempts to implement complex powers proved fruitless as they performed worse than the existing
+  Euler's formula implementations.
+- Implemented GPU accelerated Inverse Fast Fourier Transform
+
+08/03/2021 V0.2.2
+
+- Updated Bessel_C to use the faster algorithm developed for Bessel_G. 
+  This dramatically improved Bessel_C performance and substantially closed the performance gap between the two implementations.
+- Also modified WaveField_C to use the faster algorithm which again massively improved performance till it was on par with CUDA
+- Tried moving to double precision to see if CUDA performance would improve, saw minor performance loss
+- Experimented with larger alpha arrays, the CUDA implementation increases in runtime much more slowly than the CPU implementation.
+- Changed Bessel function routines to produce 0 for any m>k+1 (since we are assuming R is at max 1 and e/2 \approx 1).
+  This is likely a short term solution to the convergence problem and a full domain bessel function needs to be implemented. 
+
+  12/03/2021 V0.3.0
+
+  - Implemented the Miller algorithm for the evaluation of large m bessel functions at small values. This substantially improved convergence.
+  - Moved to float64 values for the Bessel functions as these play better with the Miller algorithm due to overflow errors for float32.
+  - Solved nan value error in Miller algorithm by forcing the evaluation of small kr and small m values via the bessj0 and bessj1 functions (since been deprecated)
+
+  18/03/2021 V0.3.1
+
+  - Converted each of the sets of subprograms into python packages so they can each import each other. This 
+    makes it much easier to call each funcition from each other function.
+  - Moved to the smallest possible seed value for the Miller algorithm to try and avoid overflow issues.
+  - Began implementing the full Wave Field Synthesis formula, am struggling with convergence and overflow
+  - Will test the existing Wave Field Synthesis system to determine if it is computing correct results. I am currently assuming it is not. 
+
+  20/03/2021 V_0.3.1
+
+  - Tested the sound field reproduction and was pleasantly surprised to see that it did reproduce the field correcly at the error microphones at least in qualitative form.
+  - Implemented a generalised WaveField plotting function on both CPU and GPU versions of the WaveField file
+
+  22/03/2021 V_0.3.1
+
+  - Implemented the compute_wavefield function on GPU and will now move on to peformance testing of this function
+  - Implemented the WaveFieldSynth_Test script with a few test signals as examples, need to implement a plane wave over all of space
+    at a pure frequency.
+
+  23/03/2021 V_0.4.0
+  
+  - Declared V0.3.1 as a completed milestone and will continue on V0.4.0
+  - Implemented plane waves over space in a general form for which a general spectrum can also be provided.
+
+  30/03/2021 V_0.4.1
+
+  - Implemented computational complexity tests for the wave field decomposition algorithm, stil have a few bugs to work out
+  - GPU code works at arbitrarily high frequency, cannot quite explain why CPU seems to fail above about 1024Hz. 
+
+  5/04/2021 V_0.4.1
+
+  - Implemented the zeroth order Bessel function of the second kind on CPU and GPU
+  - Implemented the zeroth order Hankel function of the first kind on CPU and GPU
+  - Implemented computational complexity tests for the Bessel and Hankel routines
+  - Created a Transfer library which will contain code related to the computing and cacheing of the transfer matrix
+  - Implemented the transfer matrix on CPU
+  - Implemented the transfer matrix on GPU, found that GPU only beats CPU when a very large number of frequency samples are used
+
+  7/04/2021 V_0.4.2
+
+  - accelerated the transfer matrix calculation on GPU by reducing down to a single kernel call for the
+    calculation of the greens function.
+
+  17/04/2021 V_0.4.2
+
+  - Created the infrasctructure for the WDANC simulation.
+  - Began implementing WDANC on CPU.
+  - Implemented Gradient descent but I have been seriously struggling to achieve convergence to an acceptable local minimum
+
+  22/04/2021 V_0.4.3
+
+  - Began implementing WDANC on GPU. Will write the fast version first and will have to decide whether to write
+    a slow version which is more able to measure the runtime for each of the gradient descent iterations.
+
+  24/04/2021 V_0.4.3
+
+  - Finished implementing WDANC on GPU, however while testing I discovered an issue regarding the GPU transfer function 
+    computation routine. Specifically, several -nan(ind) values keep being written the to the Transfer matrix
+    and this is causing the higher frequency elements of the WDANC process to fail.
+  - Managed to resolve the issure described above. To do this I had to change how where the Greens Function kernel
+    cancelled out of its computation when outside the expected frequency range. This ensures that the shared
+    array will be fully populated
+  - Will now declare this to be version 1.0 of the ANCOS program as its primary functionality is now finished. 
